@@ -1,0 +1,28 @@
+version: '2'
+networks:
+  myapp-tier:
+    driver: 'bridge'
+
+services:
+  php:
+    tty: true
+    image: 'docker.io/bitnami/php-fpm:latest'
+    ports:
+      - '9000:9000'
+    networks:
+      - "myapp-tier"
+    volumes:
+      - "./web:/app"
+
+  nginx:
+    image: 'bitnami/nginx:latest'
+    ports:
+      - 8080:8080
+    networks:
+      - myapp-tier
+    volumes:
+      - ./web:/app
+      - ./sb_nginx.conf:/opt/bitnami/nginx/conf/server_blocks/sb_nginx.conf
+    depends_on:
+      - php
+      - database
